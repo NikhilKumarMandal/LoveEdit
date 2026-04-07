@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+
 
 function getMimeType(dataUrl: string): string {
   const match = dataUrl.match(/^data:(image\/[a-zA-Z+]+);base64,/);
@@ -23,9 +26,19 @@ async function urlToInlineData(url: string) {
 }
 
 export async function POST(request: Request) {
+
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  };
+
+
   const {
-    imageBase64,  // data URL  — from AI-edited frames (chained edits)
-    imageUrl,     // ImageKit URL — from fresh uploads
+    imageBase64,  
+    imageUrl,     
     prompt,
     userFiles,
     aspectRatio,

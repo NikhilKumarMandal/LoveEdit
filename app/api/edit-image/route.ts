@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
-
+import { imagekit } from "@/lib/config";
+import { db } from "@/db";
+import { images } from "@/db/schema/image-schema";
 
 function getMimeType(dataUrl: string): string {
   const match = dataUrl.match(/^data:(image\/[a-zA-Z+]+);base64,/);
@@ -13,12 +15,14 @@ function cleanBase64Image(dataUrl: string): string {
   return dataUrl.replace(/^data:(.*);base64,/, "");
 }
 
-// Fetch an ImageKit (or any public) URL and return base64 + mimeType
 async function urlToInlineData(url: string) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to fetch image from URL: ${url}`);
 
-  const mimeType = (res.headers.get("content-type") || "image/jpeg").split(";")[0].trim();
+  const mimeType = (res.headers.get("content-type") || "image/jpeg")
+    .split(";")[0]
+    .trim();
+
   const buffer = await res.arrayBuffer();
   const data = Buffer.from(buffer).toString("base64");
 
@@ -26,95 +30,143 @@ async function urlToInlineData(url: string) {
 }
 
 export async function POST(request: Request) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  };
+    const {
+      imageBase64,
+      imageUrl,
+      prompt,
+      userFiles,
+      aspectRatio,
+      maskBase64,
+    } = await request.json();
 
+    if (!imageBase64 && !imageUrl) {
+      return NextResponse.json(
+        { message: "Either imageBase64 or imageUrl is required" },
+        { status: 400 }
+      );
+    }
 
-  const {
-    imageBase64,  
-    imageUrl,     
-    prompt,
-    userFiles,
-    aspectRatio,
-    maskBase64,
-  } = await request.json();
+    const ai = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY!,
+    });
 
-  if (!imageBase64 && !imageUrl) {
-    return NextResponse.json(
-      { message: "Either imageBase64 or imageUrl is required" },
-      { status: 400 },
-    );
-  }
+    let primaryInlineData: { mimeType: string; data: string };
 
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    if (imageUrl) {
+      primaryInlineData = await urlToInlineData(imageUrl);
+    } else {
+      primaryInlineData = {
+        mimeType: getMimeType(imageBase64),
+        data: cleanBase64Image(imageBase64),
+      };
+    }
 
-  // Resolve the primary image into inlineData
-  let primaryInlineData: { mimeType: string; data: string };
+    const parts: any[] = [
+      { text: prompt },
+      { inlineData: primaryInlineData },
+    ];
 
-  if (imageUrl) {
-    // Fresh upload — fetch from ImageKit server-side (no base64 over the wire)
-    primaryInlineData = await urlToInlineData(imageUrl);
-  } else {
-    // Chained AI edit — already a data URL in memory
-    primaryInlineData = {
-      mimeType: getMimeType(imageBase64),
-      data: cleanBase64Image(imageBase64),
-    };
-  }
+    if (maskBase64) {
+      parts.push({
+        inlineData: {
+          mimeType: "image/png",
+          data: cleanBase64Image(maskBase64),
+        },
+      });
+    }
 
-  const parts: object[] = [
-    { text: prompt },
-    { inlineData: primaryInlineData },
-  ];
+    if (userFiles?.length) {
+      const processedFiles = userFiles.map((file: any) => ({
+        inlineData: {
+          mimeType: getMimeType(file.url),
+          data: cleanBase64Image(file.url),
+        },
+      }));
+      parts.push(...processedFiles);
+    }
 
-  if (maskBase64) {
-    parts.push({
-      inlineData: {
-        mimeType: "image/png",
-        data: cleanBase64Image(maskBase64),
+    const response = await ai.models.generateContent({
+      model: "gemini-3-pro-image-preview",
+      contents: parts,
+      config: {
+        imageConfig: {
+          aspectRatio: aspectRatio || undefined,
+        },
       },
     });
-  }
 
-  if (userFiles && Array.isArray(userFiles) && userFiles.length > 0) {
-    const processedFiles = userFiles.map((file) => ({
-      inlineData: {
-        mimeType: getMimeType(file.url),
-        data: cleanBase64Image(file.url),
-      },
-    }));
-    parts.push(...processedFiles);
-  }
+    const content = response.candidates?.[0]?.content;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-3-pro-image-preview",
-    contents: parts,
-    config: {
-      imageConfig: {
-        aspectRatio: aspectRatio || undefined,
-      },
-    },
-  });
+    if (content?.parts) {
+      for (const part of content.parts) {
+        if (part.inlineData) {
 
-  const content = response.candidates?.[0]?.content;
+          if (!part.inlineData?.data) {
+            return NextResponse.json(
+              { error: "Invalid image data from AI" },
+              { status: 500 }
+            );
+          }
 
-  if (content?.parts) {
-    for (const part of content.parts) {
-      if (part.text) {
-        console.log(part.text);
-      } else if (part.inlineData) {
-        return NextResponse.json({
-          result: `data:image/png;base64,${part.inlineData.data}`,
-        });
+          // ✅ Convert base64 → buffer
+          const buffer = Buffer.from(part.inlineData.data, "base64");
+
+          const fileName = `${session.user.id}-${Date.now()}.png`;
+
+          // ✅ Upload to ImageKit
+          const uploadResponse = await imagekit.upload({
+            file: buffer,
+            fileName,
+            folder: "/loveedit/generated",
+            useUniqueFileName: false,
+          });
+
+          // ✅ Save in DB
+          const [record] = await db
+            .insert(images)
+            .values({
+              userId: session.user.id,
+              url: uploadResponse.url,
+              fileId: uploadResponse.fileId,
+              fileName: uploadResponse.name,
+              width: uploadResponse.width,
+              height: uploadResponse.height,
+            })
+            .returning();
+
+          // ✅ Return ImageKit URL instead of base64
+          return NextResponse.json({
+            success: true,
+            image: {
+              id: record.id,
+              url: uploadResponse.url,
+              fileId: uploadResponse.fileId,
+              width: uploadResponse.width,
+              height: uploadResponse.height,
+            },
+          });
+        }
       }
     }
-  }
 
-  return NextResponse.json({ message: "Failed to generate the image" });
+    return NextResponse.json(
+      { message: "Failed to generate image" },
+      { status: 500 }
+    );
+  } catch (error) {
+    console.error("Generate error:", error);
+    return NextResponse.json(
+      { error: "Image generation failed" },
+      { status: 500 }
+    );
+  }
 }

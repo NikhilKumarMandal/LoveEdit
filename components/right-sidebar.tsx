@@ -54,13 +54,15 @@ export const RightSidebar = () => {
                         ? "border-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.2)]"
                         : "border-zinc-800 hover:border-zinc-600 opacity-60 hover:opacity-100",
                     )}>
-                    <Image
-                      width={500}
-                      height={500}
-                      src={imgState}
-                      alt={`Version ${1}`}
-                      className="w-full h-full object-cover"
-                    />
+                    {imgState ? (
+                      <Image
+                        width={500}
+                        height={500}
+                        src={imgState}
+                        alt={`Version ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : null}
 
                     {isActive && (
                       <div className="absolute inset-0 bg-yellow-500/5 pointer-events-none" />

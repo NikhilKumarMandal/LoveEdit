@@ -158,10 +158,18 @@ export const useEditorStore = create<EditorState>()(
       }
 
       const data = await response.json();
+      const newImage = data.image?.url;
+
+      if (!newImage) {
+        set({ isLoading: false });
+        throw new Error("Invalid response from API");
+      };
+
       const clonedHistory = [...state.history, data.result];
 
       set(() => ({
-        image: data.result,          // data URL from AI — transient, session only
+        image: newImage,
+        imageId: data.image?.id ?? null,
         history: clonedHistory,
         historyIndex: state.history.length,
         isLoading: false,
@@ -196,10 +204,18 @@ export const useEditorStore = create<EditorState>()(
       }
 
       const data = await response.json();
-      const clonedHistory = [...state.history, data.result];
+      const newImage = data.image?.url;
+
+      if (!newImage) {
+        set({ isLoading: false });
+        throw new Error("Invalid response from API");
+      }
+
+      const clonedHistory = [...state.history, newImage];
 
       set(() => ({
-        image: data.result,
+        image: newImage,
+        imageId: data.image?.id ?? null,
         history: clonedHistory,
         historyIndex: state.history.length,
         isLoading: false,
@@ -236,10 +252,18 @@ export const useEditorStore = create<EditorState>()(
       }
 
       const data = await response.json();
-      const clonedHistory = [...state.history, data.result];
+      const newImage = data.image?.url;
+
+      if (!newImage) {
+        set({ isLoading: false });
+        throw new Error("Invalid response from API");
+      }
+
+      const clonedHistory = [...state.history, newImage];
 
       set(() => ({
-        image: data.result,
+        image: newImage,
+        imageId: data.image?.id ?? null,
         history: clonedHistory,
         historyIndex: state.history.length,
         isLoading: false,

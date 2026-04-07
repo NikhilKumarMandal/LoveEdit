@@ -4,10 +4,11 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
 type EditorState = {
-  image: string | null;
+  image: string | null;     
+  imageId: string | null;     
   mask: string | null;
   prompt: string;
-  history: string[];
+  history: string[];          
   historyIndex: number;
   showHistory: boolean;
   isLoading: boolean;
@@ -23,7 +24,7 @@ type EditorState = {
   redo: () => void;
   toggleHistory: () => void;
   setLoading: (val: boolean) => void;
-  setImage: (ImageData: string) => void;
+  setImage: (imageUrl: string, imageId?: string) => void;  // now takes URL + optional DB id
   setPrompt: (prompt: string) => void;
   generateEdit: () => Promise<void>;
   applyFilter: (prompt: string) => void;
@@ -31,9 +32,20 @@ type EditorState = {
   setSelectedTool: (tool: ToolType) => void;
 };
 
+// Helper: decide what to send to the API.
+// - If image is an ImageKit URL (https://...) → send as imageUrl, server fetches it
+// - If image is a data URL (data:...) → send as imageBase64, already in memory
+function buildImagePayload(image: string) {
+  if (image.startsWith("data:")) {
+    return { imageBase64: image };
+  }
+  return { imageUrl: image };
+}
+
 export const useEditorStore = create<EditorState>()(
   devtools((set, get) => ({
     image: null,
+    imageId: null,
     mask: null,
     prompt: "",
     history: [],
@@ -43,6 +55,7 @@ export const useEditorStore = create<EditorState>()(
     userFiles: [],
     selectedTool: ToolType.MOVE,
     brushSize: 100,
+
     setMask: (mask: string) => {
       set({ mask });
     },
@@ -55,11 +68,16 @@ export const useEditorStore = create<EditorState>()(
     setUserFiles: (files: FileUIPart[]) => {
       set({ userFiles: files });
     },
-    setImage: (imageData: string) =>
+
+    // Called after ImageKit upload succeeds — receives the URL from DB
+    setImage: (imageUrl: string, imageId?: string) =>
       set(() => ({
-        image: imageData,
-        history: [imageData],
+        image: imageUrl,
+        imageId: imageId ?? null,
+        history: [imageUrl],
+        historyIndex: 0,
       })),
+
     setHistory: (history) => set({ history }),
     setHistoryIndex: (index: number) => {
       const state = get();
@@ -70,9 +88,8 @@ export const useEditorStore = create<EditorState>()(
     },
     undo: () => {
       const state = get();
-
       if (state.historyIndex > 0) {
-        const newIndex = state.historyIndex - 1; // 0 -> -1
+        const newIndex = state.historyIndex - 1;
         set({
           image: state.history[newIndex],
           historyIndex: newIndex,
@@ -81,11 +98,8 @@ export const useEditorStore = create<EditorState>()(
     },
     redo: () => {
       const state = get();
-
       if (state.historyIndex < state.history.length - 1) {
-        // 4 -> 3
         const newIndex = state.historyIndex + 1;
-
         set({
           historyIndex: newIndex,
           image: state.history[newIndex],
@@ -95,16 +109,16 @@ export const useEditorStore = create<EditorState>()(
     toggleHistory: () => {
       const state = get();
       if (state.history.length) {
-        set({
-          showHistory: !state.showHistory,
-        });
+        set({ showHistory: !state.showHistory });
       }
     },
     setLoading: (val: boolean) => {
       set({ isLoading: val });
     },
+
     generateEdit: async () => {
       const state = get();
+      if (!state.image) return;
       set({ isLoading: true });
 
       const finalPrompt = `
@@ -127,14 +141,11 @@ export const useEditorStore = create<EditorState>()(
     4. TEXTURE MATCHING: Replicate the exact film grain, noise level, and sharpness of the original photo to prevent a "pasted-on" look. The transition at the mask boundary must be invisible.
     5. STRICT ISOLATION: Do not modify any pixels outside the designated white masked area under any circumstances`;
 
-      // todo: try,catch, -> use finally block to set loading false
       const response = await fetch("/api/edit-image", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          imageBase64: state.image,
+          ...buildImagePayload(state.image),   // imageUrl OR imageBase64
           prompt: finalPrompt,
           userFiles: state.userFiles,
           maskBase64: state.mask,
@@ -147,19 +158,19 @@ export const useEditorStore = create<EditorState>()(
       }
 
       const data = await response.json();
-
       const clonedHistory = [...state.history, data.result];
 
       set(() => ({
-        image: data.result,
+        image: data.result,          // data URL from AI — transient, session only
         history: clonedHistory,
         historyIndex: state.history.length,
         isLoading: false,
       }));
     },
+
     applyFilter: async (prompt: string) => {
-      // prompt -> image -> send to model(server)
       const state = get();
+      if (!state.image) return;
 
       const finalPrompt = `
         ${prompt}
@@ -172,11 +183,9 @@ export const useEditorStore = create<EditorState>()(
 
       const response = await fetch("/api/edit-image", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          imageBase64: state.image,
+          ...buildImagePayload(state.image),   // imageUrl OR imageBase64
           prompt: finalPrompt,
         }),
       });
@@ -196,34 +205,28 @@ export const useEditorStore = create<EditorState>()(
         isLoading: false,
       }));
     },
+
     applyExpansion: async (aspectRatio: string) => {
       const state = get();
       if (!state.image) return;
 
       const baseInstruction = `High-fidelity outpainting. Analyze the visual context of the original image and seamlessly extend the scenery into the empty areas. Ensure the person's face and features remain completely unchanged`;
-
-      const technicalConstraint = `Strictly maintain the continuity of existing lines, horizon, textures, lighting, and perspective. The transition must be invisible. Do not alter the style or content of the original center image `;
-
+      const technicalConstraint = `Strictly maintain the continuity of existing lines, horizon, textures, lighting, and perspective. The transition must be invisible. Do not alter the style or content of the original center image`;
       const userContext = state.prompt
-        ? `Addtional context/subject for extension: ${state.prompt}`
+        ? `Additional context/subject for extension: ${state.prompt}`
         : "";
 
-      const finalPrompt = `
-        ${baseInstruction}
-        ${technicalConstraint}
-        ${userContext}`;
+      const finalPrompt = `${baseInstruction}\n${technicalConstraint}\n${userContext}`;
 
       set({ isLoading: true });
 
       const response = await fetch("/api/edit-image", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          imageBase64: state.image,
+          ...buildImagePayload(state.image),   // imageUrl OR imageBase64
           prompt: finalPrompt,
-          aspectRatio: aspectRatio,
+          aspectRatio,
         }),
       });
 
@@ -242,6 +245,7 @@ export const useEditorStore = create<EditorState>()(
         isLoading: false,
       }));
     },
+
     setPrompt: (prompt: string) => set({ prompt }),
   })),
 );

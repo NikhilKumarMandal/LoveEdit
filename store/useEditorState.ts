@@ -1,3 +1,4 @@
+import { processImageTool } from "@/lib/config";
 import { ToolType } from "@/lib/constants";
 import { FileUIPart } from "ai";
 import { create } from "zustand";
@@ -30,6 +31,8 @@ type EditorState = {
   applyFilter: (prompt: string) => void;
   applyExpansion: (aspectRatio: string) => void;
   setSelectedTool: (tool: ToolType) => void;
+  removeBackground: () => Promise<void>;
+  upscaleImage: (resolution?: string) => Promise<void>;
 };
 
 // Helper: decide what to send to the API.
@@ -268,6 +271,61 @@ export const useEditorStore = create<EditorState>()(
         historyIndex: state.history.length,
         isLoading: false,
       }));
+    },
+    removeBackground: async () => {
+      const state = get();
+      if (!state.image) return;
+
+      set({ isLoading: true });
+
+      try {
+        const data = await processImageTool("bg-remove", state.image);
+
+        const newImage = data.image?.url;
+        if (!newImage) throw new Error("Invalid response");
+
+        const updatedHistory = [...state.history, newImage];
+
+        set({
+          image: newImage,
+          imageId: data.image?.id ?? null,
+          history: updatedHistory,
+          historyIndex: updatedHistory.length - 1,
+          isLoading: false,
+        });
+      } catch (err) {
+        console.error(err);
+        set({ isLoading: false });
+      }
+    },
+
+    upscaleImage: async (resolution = "4k") => {
+      const state = get();
+      if (!state.image) return;
+
+      set({ isLoading: true });
+
+      try {
+        const data = await processImageTool("upscale", state.image, {
+          targetResolution: resolution,
+        });
+
+        const newImage = data.image?.url;
+        if (!newImage) throw new Error("Invalid response");
+
+        const updatedHistory = [...state.history, newImage];
+
+        set({
+          image: newImage,
+          imageId: data.image?.id ?? null,
+          history: updatedHistory,
+          historyIndex: updatedHistory.length - 1,
+          isLoading: false,
+        });
+      } catch (err) {
+        console.error(err);
+        set({ isLoading: false });
+      }
     },
 
     setPrompt: (prompt: string) => set({ prompt }),

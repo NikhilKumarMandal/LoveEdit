@@ -5,6 +5,7 @@ import {
     timestamp,
     boolean,
     index,
+    integer,
 } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
@@ -15,6 +16,7 @@ export const user = pgTable("user", {
         .default(false)
         .notNull(),
     image: text("image"),
+    credits: integer().default(0),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
         .defaultNow()

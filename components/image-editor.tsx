@@ -250,7 +250,7 @@ const ImageEditor = () => {
   };
 
   return (
-    <div className="w-full h-full flex-col items-center justify-center">
+    <div className="w-full h-full min-h-[80vh] flex items-center justify-center">
       {/* <canvas
         ref={maskCanvasRef}
         className="max-w-full max-h-full"></canvas> */}

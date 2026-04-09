@@ -1,4 +1,4 @@
-import { processImageTool } from "@/lib/config";
+import { processImageTool } from "@/lib/api";
 import { ToolType } from "@/lib/constants";
 import { FileUIPart } from "ai";
 import { create } from "zustand";

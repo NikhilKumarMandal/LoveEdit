@@ -19,9 +19,24 @@ const Gallery = async () => {
     const images = response.success && response.data ? response.data : [];
 
     return (
-        <section className="w-full relative flex flex-col pt-16">
-            <h1 className="text-3xl font-semibold px-17">My Images</h1>
+        <section className="w-full relative flex flex-col pt-10 sm:pt-12 md:pt-16 px-4 sm:px-6 lg:px-10">
+
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold mt-2">
+                    My Images
+                </h1>
+
+                <div className="self-start sm:self-auto">
+                    <span className="text-xs sm:text-sm font-medium bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full border border-yellow-300">
+                        ⚠️ Download within 2 days (auto delete)
+                    </span>
+                </div>
+
+            </div>
+
             <GalleryComponent images={images} />
+
         </section>
     );
 };

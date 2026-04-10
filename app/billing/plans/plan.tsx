@@ -126,8 +126,8 @@ export function Plan({ serverPlan }: { serverPlan: NewPlan }) {
                         className={cn(
                             "w-full hover:scale-100 hover:translate-y-0 shadow-none",
                             localPlan.id === "gold"
-                                ? "bg-primary text-white"
-                                : "bg-foreground text-gray hover:bg-foreground/90"
+                                ? "bg-[#88eade] text-black hover:bg-[#88eade]/60"
+                                : "bg-[#88eade] text-[#1a1a1a] hover:bg-[#88eade]/60"
                         )}
                         onClick={getPaymentUrl}
                         disabled={loading}

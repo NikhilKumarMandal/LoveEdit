@@ -2,6 +2,7 @@
 'use server'
 
 import { configureLemonSqueezy } from '@/lib/lemonsqueezy'
+import { redirect } from "next/navigation";
 
 import {
     createCheckout,
@@ -180,7 +181,8 @@ export async function getCheckoutURL(
     const session = await getCurrentUser();
 
     if (!session) {
-        throw new Error("User is not authenticated.")
+        redirect("/auth/sign-in");
+       
     }
 
     if (!user) throw new Error("Not logged in");

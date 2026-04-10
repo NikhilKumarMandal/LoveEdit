@@ -1,10 +1,15 @@
+"use client"
 import { CheckCircle2 } from "lucide-react";
 import Wrapper from "../global/wrapper";
 import Container from "../global/container";
 import Image from "next/image";
 import { Button } from "../ui/button";
 
+import { useRouter } from "next/navigation";
+
 const CTA = () => {
+    const router = useRouter();
+
     return (
         <div className="flex flex-col items-center justify-center relative w-full py-16 lg:py-24 overflow-hidden">
             <div className="absolute bottom-0 lg:bottom-0 inset-x-0 mx-auto bg-primary/50 lg:bg-primary/70 rounded-full w-1/3 h-1/16 blur-[4rem]"></div>
@@ -14,19 +19,19 @@ const CTA = () => {
                     <div className="flex flex-col items-start justify-center w-full">
                         <Container className="w-max mx-auto">
                             <h2 className="text-3xl lg:text-5xl leading-tight text-transparent bg-clip-text bg-gradient-to-b from-neutral-100 to-neutral-400 font-semibold">
-                                Start Your <br /> 7-day free trial
+                                Start Creating <br /> with AI Today
                             </h2>
                             <div className="flex items-center gap-4 mt-6">
                                 <div className="flex items-center gap-2">
                                     <CheckCircle2 className="size-4 text-primary" />
                                     <span className="text-sm font-medium">
-                                        Free 7-day trial
+                                        No setup required
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <CheckCircle2 className="size-4 text-primary" />
                                     <span className="text-sm font-medium">
-                                        No credit card required
+                                        Instant AI-powered results
                                     </span>
                                 </div>
                             </div>
@@ -44,7 +49,10 @@ const CTA = () => {
                                 />
                             </div>
                             <div className="flex items-center gap-4 mt-6">
-                                <Button size="lg">
+                                <Button
+                                    size="lg"
+                                    onClick={() => router.push("/gallery")}
+                                >
                                     Get Started
                                 </Button>
                                 <div className="flex flex-col">
@@ -61,4 +69,4 @@ const CTA = () => {
     )
 };
 
-export default CTA
+export default CTA;

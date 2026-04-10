@@ -1,11 +1,14 @@
+"use client"
 import Wrapper from "@/components/global/wrapper";
 import Icons from "@/components/global/icons";
 import Image from "next/image";
 import Container from "@/components/global/container";
 import { Button } from "../ui/button";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 
 const Hero = () => {
+    const router = useRouter();
     return (
         <div className="relative z-0 w-full h-full">
 
@@ -25,30 +28,34 @@ const Hero = () => {
                         <div className="flex items-center justify-center gap-x-1 px-2 py-1.5 relative w-max mx-auto rounded-full before:absolute before:inset-0 before:-z-10 before:p-[1px] before:rounded-3xl before:bg-gradient-to-b before:from-neutral-700 before:to-neutral-900 before:content-[''] after:absolute after:inset-[1px] after:-z-10 after:rounded-[22px] after:bg-[#181818]/60">
                             <Icons.stars className="size-5" />
                             <span className="text-sm text-white">
-                                Verve Product Overview
+                                LoveEdit Product Overview
                             </span>
                         </div>
                     </Container>
 
                     <Container delay={0.1}>
                         <h2 className="text-balance !leading-[1.25] text-center text-5xl md:text-6xl font-semibold tracking-tight mt-6 w-full">
-                            Deliver an Enterprise <br className="hidden lg:inline-block" /> Quality Project in Minutes
+                            Build Studio-Quality <br className="hidden lg:inline-block" />Images in Minutes
                         </h2>
                     </Container>
 
                     <Container delay={0.2}>
                         <p className="text-base md:text-lg font-normal text-center text-balance text-muted-foreground max-w-3xl mx-auto mt-4">
-                            Effortlessly launch robust, production-ready projects with best-in-class tools and seamless workflows—no complex setup required
+                            Effortlessly create stunning, production-ready images with powerful AI tools and seamless workflows-no complex editing skills required
                         </p>
                     </Container>
 
                     <Container delay={0.3}>
                         <div className="mt-6">
-                            <Link href={"/editor"}>
-                            <Button size="default">
+
+                            <Button size="default"
+                                onClick={() => {
+                                    router.push("/gallery");
+                                }}
+                            >
                                 Get started for free
-                                </Button>
-                            </Link>
+                            </Button>
+
                         </div>
                     </Container>
 

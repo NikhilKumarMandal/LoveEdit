@@ -1,32 +1,32 @@
 export const FEATURES = [
-    {
-        title: "Responsive Break Points",
-        desc: "Adapt your layout seamlessly across all devices with flexible breakpoints.",
-        icon: "/icons/pie.svg",
-    },
-    {
-        title: "Easy to Customize",
-        desc: "Effortlessly tailor components to match your brand and workflow.",
-        icon: "/icons/computer.svg",
-    },
-    {
-        title: "Framer CMS",
-        desc: "Manage your content dynamically with powerful CMS integration.",
-        icon: "/icons/label.svg",
-    },
-    {
-        title: "Structured Layers",
-        desc: "Organize your project with clear, maintainable layer structures.",
-        icon: "/icons/crown.svg",
-    },
-    {
-        title: "Text Effects",
-        desc: "Enhance your typography with stunning and customizable text effects.",
-        icon: "/icons/cursor.svg",
-    },
-    {
-        title: "Time Animations",
-        desc: "Bring your UI to life with smooth and engaging time-based animations.",
-        icon: "/icons/clock.svg",
-    },
+  {
+    title: "Background Removal",
+    desc: "Instantly isolate subjects with precision AI, delivering clean, production-ready cutouts.",
+        icon: "/icons/scissors.svg",
+  },
+  {
+    title: "Image Upscaling",
+    desc: "Enhance resolution with advanced AI while preserving clarity, detail, and texture.",
+    icon: "/icons/zoom-in.svg",
+  },
+  {
+    title: "AI Image Generation",
+    desc: "Generate high-quality visuals from simple prompts, powered by state-of-the-art models.",
+      icon: "/icons/sparkles.svg",
+  },
+  {
+    title: "AI Filters",
+    desc: "Apply refined, intelligent filters to transform images with consistent, high-end results.",
+    icon: "/icons/crown.svg",
+  },
+  {
+    title: "Smart Editing",
+    desc: "Annotate, highlight, and refine visuals with intuitive tools built for precision workflows.",
+    icon: "/icons/edits.svg",
+  },
+  {
+    title: "Generative Fill",
+    desc: "Seamlessly expand or modify images with context-aware AI that blends perfectly.",
+      icon: "/icons/brush.svg",
+  },
 ];

@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <div className="w-full relative flex flex-col pt-16">
       <Hero />
-      <HowItWorks />
+      {/* <HowItWorks /> */}
       <Features />
       <Faq />
       <Stats />

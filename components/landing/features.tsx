@@ -11,10 +11,10 @@ const Features = () => {
                 <Container>
                     <div className="flex flex-col items-start justify-start lg:items-center lg:justify-center">
                         <h2 className="text-3xl lg:text-4xl font-semibold text-left lg:text-center tracking-tight">
-                            Build a solution that wins you <br /> more customers
+                            Create stunning visuals with <br /> AI-powered precision
                         </h2>
                         <p className="text-base lg:text-lg font-normal text-muted-foreground text-left lg:text-center max-w-md mt-2">
-                            Experience the power of Verve with our easy-to-use notebook solution. Get started in minutes
+                            Powerful tools for generation, enhancement, and editing-built to deliver high-quality results instantly
                         </p>
                     </div>
                 </Container>

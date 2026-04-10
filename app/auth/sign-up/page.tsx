@@ -58,13 +58,13 @@ export default function SignupForm() {
                         className="h-10 w-10 mx-auto"
                         height={40}
                         width={40}
-                        alt="CodersGPT"
+                        alt="LoveEdit"
                     />
                     <CardTitle className="text-[32px] font-semibold tracking-tight text-[#ececec]">
                         Create an account
                     </CardTitle>
                     <CardDescription className="mx-auto max-w-80 text-[15px] leading-relaxed text-[#b4b4b4]">
-                        Join CodersGPT to get smarter responses and
+                        Join LoveEdit to get smarter responses and
                         start building today.
                     </CardDescription>
                 </CardHeader>

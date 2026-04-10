@@ -51,7 +51,7 @@ export const RightSidebar = () => {
                     className={cn(
                       "relative w-full aspect-square rounded-xl overflow-hidden border-2 transition-all duration-200",
                       isActive
-                        ? "border-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.2)]"
+                        ? "border-[#88eade] shadow-[0_0_15px_rgba(234,179,8,0.2)]"
                         : "border-zinc-800 hover:border-zinc-600 opacity-60 hover:opacity-100",
                     )}>
                     {imgState ? (
@@ -73,7 +73,7 @@ export const RightSidebar = () => {
                     className={cn(
                       "absolute top-2 right-2 w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-bold shadow-md z-10 pointer-events-none",
                       isActive
-                        ? "bg-yellow-500 text-zinc-950"
+                        ? "bg-[#88eade] text-zinc-950"
                         : "bg-zinc-800 text-zinc-400 border border-zinc-700",
                     )}>
                     {idx + 1}

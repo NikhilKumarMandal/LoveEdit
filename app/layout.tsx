@@ -15,10 +15,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CodersBanana",
+  title: "LoveEdit",
   description: "AI Image Editor",
-  keywords: "codersbanana,codersgyan",
-  creator: "codersgyan",
+  keywords: "LoveEdit,nikhil",
+  creator: "LoveEdit",
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon-16x16.png",

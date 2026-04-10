@@ -102,8 +102,8 @@ export default function Home() {
                       </h3>
                       <p className="text-zinc-500 text-sm mt-3 leading-relaxed">
                         Upload an image to unlock the full potential of{" "}
-                        <span className="text-yellow-500 font-medium">
-                          Coder&apos;s Banana
+                        <span className="text-[#88eade] font-medium">
+                          LoveEdit
                         </span>{" "}
                         AI tools.
                       </p>
@@ -112,7 +112,7 @@ export default function Home() {
                     <Button
                       onClick={() => fileInputRef.current?.click()}
                       disabled={isUploading}
-                      className="w-full h-11 bg-yellow-500 hover:bg-yellow-400 text-zinc-950 font-bold rounded-xl transition-all hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
+                      className="w-full h-11 bg-[#88eade] hover:bg-[#88eade]/60 text-zinc-950 font-bold rounded-xl transition-all hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
                     >
                       {isUploading ? (
                         <span className="flex items-center gap-2">

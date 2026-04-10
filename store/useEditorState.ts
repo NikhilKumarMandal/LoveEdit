@@ -166,9 +166,9 @@ export const useEditorStore = create<EditorState>()(
       if (!newImage) {
         set({ isLoading: false });
         throw new Error("Invalid response from API");
-      };
+      }
 
-      const clonedHistory = [...state.history, data.result];
+      const clonedHistory = [...state.history, newImage];
 
       set(() => ({
         image: newImage,
@@ -298,7 +298,6 @@ export const useEditorStore = create<EditorState>()(
         set({ isLoading: false });
       }
     },
-
     upscaleImage: async (resolution = "4k") => {
       const state = get();
       if (!state.image) return;

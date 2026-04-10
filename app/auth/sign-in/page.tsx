@@ -58,7 +58,7 @@ export default function LoginForm() {
                         className="h-10 w-10 mx-auto"
                         height={40}
                         width={40}
-                        alt="CodersGPT"
+                        alt="LoveEdit"
                     />
                     <CardTitle className="text-[32px] font-semibold tracking-tight text-[#ececec]">
                         Log in LoveEdit

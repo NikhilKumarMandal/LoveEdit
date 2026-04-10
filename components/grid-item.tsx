@@ -49,10 +49,10 @@ const GridItem = ({
               className={cn(
                 "relative h-20 w-full p-0 overflow-hidden rounded-lg border transition-all",
                 "bg-zinc-950 border-zinc-800",
-                "hover:border-yellow-500 hover:opacity-100",
+                "hover:border-[#88eade] hover:opacity-100",
                 // Explicit cursor handling
                 disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer opacity-80",
-                isActive ? "border-yellow-500 ring-1 ring-yellow-500/50 opacity-100" : ""
+                isActive ? "border-[#88eade] ring-1 ring-[#88eade]/50 opacity-100" : ""
               )}
             >
               {/* Full Cover Image */}
@@ -94,10 +94,10 @@ const GridItem = ({
       className={cn(
         "relative flex flex-col items-center justify-center gap-2 p-3 h-20 w-full rounded-lg border transition-all group",
         "bg-zinc-950 border-zinc-800",
-        "hover:border-yellow-500/50 hover:bg-zinc-900",
+        "hover:border-[#88eade]/50 hover:bg-zinc-900",
         // Explicit cursor handling
         disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer",
-        isActive ? "border-yellow-500 bg-zinc-900" : ""
+        isActive ? "border-[#88eade] bg-zinc-900" : ""
       )}
     >
       {Icon && (
@@ -105,7 +105,7 @@ const GridItem = ({
           size={20}
           className={cn(
             "transition-colors",
-            isActive ? "text-yellow-500" : "text-zinc-500 group-hover:text-yellow-500"
+            isActive ? "text-[#88eade]" : "text-zinc-500 group-hover:text-[#88eade]"
           )}
         />
       )}

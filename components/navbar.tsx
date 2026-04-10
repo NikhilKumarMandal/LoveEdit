@@ -28,7 +28,7 @@ export function Navbar() {
 
   const handleDownload = () => {
     const link = document.createElement("a");
-    link.download = `codersbanana-${Date.now()}.png`;
+    link.download = `LoveEdit-${Date.now()}.png`;
     link.href = image as string;
     link.click();
   };
@@ -43,15 +43,15 @@ export function Navbar() {
           <div className="relative h-11 w-11 overflow-hidden rounded-xl flex items-center justify-center">
             <Image
               src="/logo.png"
-              alt="Coder's Banana Logo"
+              alt="LoveEdit Logo"
               fill
               className="object-cover p-1"
               priority
             />
           </div>
           <span className="text-zinc-100 hidden md:block tracking-tight">
-            {`Coder's`}
-            <span className="text-yellow-500">Banana</span>
+            {`Love`}
+            <span className="text-[#88eade]">Edit</span>
           </span>
         </Link>
       </div>
@@ -99,7 +99,7 @@ export function Navbar() {
             variant="default"
             disabled={!image}
             size="sm"
-            className="h-9 bg-yellow-500 text-zinc-950 hover:bg-yellow-400 font-bold px-2.5 md:px-4">
+            className="h-9 bg-[#88eade] text-zinc-950 hover:bg-[#88eade]/80 font-bold px-2.5 md:px-4">
             <span className="hidden md:inline">Export</span>
             <Download size={14} className="md:ml-2" />
           </Button>

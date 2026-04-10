@@ -78,7 +78,7 @@ export async function Plans() {
     }
 
     return (
-        <div className="max-w-6xl mx-auto px-8 sm:px-16 py-10 h-[calc(100vh-33px)]">
+        <div className="max-w-6xl mx-auto px-8 sm:px-16 py-10 h-[calc(100vh-33px)] mt-10">
             <div className="mb-5 mt-3 grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-5">
                 {filteredPlans.map((plan, index) => (
                     <Plan key={`plan-${index}`} serverPlan={plan} />

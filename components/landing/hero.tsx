@@ -3,6 +3,7 @@ import Icons from "@/components/global/icons";
 import Image from "next/image";
 import Container from "@/components/global/container";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 const Hero = () => {
     return (
@@ -43,9 +44,11 @@ const Hero = () => {
 
                     <Container delay={0.3}>
                         <div className="mt-6">
+                            <Link href={"/editor"}>
                             <Button size="default">
                                 Get started for free
-                            </Button>
+                                </Button>
+                            </Link>
                         </div>
                     </Container>
 

@@ -1,27 +1,22 @@
 export const NAV_LINKS = [
     {
-        name: "About",
-        link: "/about",
+        name: "Gallery",
+        link: "/gallery",
     },
     {
-        name: "Integrations",
-        link: "/integrations",
+        name: "Editior",
+        link: "/editior",
     },
     {
-        name: "Pricing",
-        link: "/pricing",
-    },
-    {
-        name: "Blog",
-        link: "/blog",
-    },
+        name: "Billing",
+        link: "/billing",
+    }
 ];
 
 export const PRODUCT_LINKS = [
-    { label: "About", href: "/about" },
-    { label: "Integrations", href: "/integrations" },
-    { label: "Pricing", href: "/pricing" },
-    { label: "Demo", href: "/contact" },
+    { label: "Gallery", href: "/gallery" },
+    { label: "Editior", href: "/editior" },
+    { label: "Billing", href: "/billing" },
 ];
 
 export const RESOURCES_LINKS = [

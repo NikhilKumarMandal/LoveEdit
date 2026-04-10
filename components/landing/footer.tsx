@@ -17,7 +17,7 @@ const Footer = () => {
                         <div className="flex flex-col items-start justify-start md:max-w-[300px]">
                             <div className="flex items-center gap-2">
                                 <Image
-                                    src="/icons/icon.svg"
+                                    src="/icon-dark.svg"
                                     alt="LoveEdit"
                                     width={32}
                                     height={32}

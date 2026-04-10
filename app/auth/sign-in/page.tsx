@@ -21,7 +21,6 @@ import {  GoogleIcon } from "../icons";
 
 type SocialProvider = "google" | "github";
 import { useState } from "react";
-import { useForm } from "@tanstack/react-form";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -96,7 +95,7 @@ export default function LoginForm() {
                     <div className="text-sm text-[#b4b4b4]">
                         Don&apos;t have an account?{" "}
                         <Link
-                            href="/auth/signup"
+                            href="/auth/sign-up"
                             className="text-white hover:underline">
                             Sign up
                         </Link>

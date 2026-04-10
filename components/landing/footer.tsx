@@ -18,13 +18,13 @@ const Footer = () => {
                             <div className="flex items-center gap-2">
                                 <Image
                                     src="/icons/icon.svg"
-                                    alt="Verve"
+                                    alt="LoveEdit"
                                     width={32}
                                     height={32}
                                     className="size-6"
                                 />
                                 <span className="text-lg lg:text-xl font-medium">
-                                    Verve
+                                    LoveEdit
                                 </span>
                             </div>
                             <p className="text-muted-foreground mt-4 text-sm">
@@ -96,7 +96,7 @@ const Footer = () => {
                 <Container animation="fadeUp" delay={1}>
                     <div className="mt-16 border-t border-border/80 pt-8 flex flex-col md:flex-row items-center justify-center">
                         <p className="text-sm text-muted-foreground">
-                            © {new Date().getFullYear()} Verve. All rights reserved.
+                            © {new Date().getFullYear()} LoveEdit. All rights reserved.
                         </p>
                     </div>
                 </Container>

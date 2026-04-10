@@ -7,16 +7,18 @@ import { LeftSidebar } from "@/components/left-sidebar";
 import ImageGenerationLoading from "@/components/image-generation";
 import { AIPromptInput } from "@/components/prompt-input";
 import { RightSidebar } from "@/components/right-sidebar";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useEditorStore } from "@/store/useEditorState";
 import ImageEditor from "@/components/image-editor";
 import { Loader2 } from "lucide-react";
-
+import { useRouter } from "next/navigation";
+ 
 export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const { image, setImage, showHistory, isLoading } = useEditorStore();
+  const router = useRouter();
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

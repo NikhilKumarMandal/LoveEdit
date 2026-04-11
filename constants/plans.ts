@@ -13,28 +13,31 @@ export type PLAN = {
 
 
 const featuresX: string[] = [
-    "15 images",
-    "Edit Image",
-    "Generate Image",
+    "Smart Editing",
+    "Generative Fill",
     "Remove bg image",
     "Upscale Image",
+    "AI Image Generation",
+    "Remix Image"
 ]
 
 const featuresY: string[] = [
-    "90 images",
-    "Edit Image",
-    "Generate Image",
+    "Smart Editing",
+    "Generative Fill",
     "Remove bg image",
     "Upscale Image",
-    "Priority support"
+    "AI Image Generation",
+    "Remix Image",
+    "Priority support",
 ]
 
 const featuresZ: string[] = [
-    "140 images",
-    "Edit Image",
-    "Generate Image",
+    "Smart Editing",
+    "Generative Fill",
     "Remove bg image",
     "Upscale Image",
+    "AI Image Generation",
+    "Remix Image",
     "Priority support"
 ]
 
@@ -50,9 +53,9 @@ export const PLANS: PLAN[] = [
     {
         id: "silver",
         title: "Silver",
-        tokens: 30,
-        price: 5,
-        originalPrice: 12,
+        tokens: 1500,
+        price: 19,
+        originalPrice: 30,
         isLimitedTimeOffer: true,
         buttonText: "Continue with Silver",
         features: featuresX,
@@ -60,9 +63,9 @@ export const PLANS: PLAN[] = [
     {
         id: "gold",
         title: "Gold",
-        tokens: 180,
-        price: 15,
-        originalPrice: 30,
+        tokens: 3500,
+        price: 39,
+        originalPrice: 62,
         badge: "Most Popular",
         isLimitedTimeOffer: true,
         buttonText: "Continue with Gold",
@@ -71,9 +74,9 @@ export const PLANS: PLAN[] = [
     {
         id: "platinum",
         title: "Platinum",
-        tokens: 280,
-        price: 20,
-        originalPrice: 40,
+        tokens: 7000,
+        price: 69,
+        originalPrice: 110,
         isLimitedTimeOffer: true,
         buttonText: "Continue with Platinum",
         features: featuresZ,

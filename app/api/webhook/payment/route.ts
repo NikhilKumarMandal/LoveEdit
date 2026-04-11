@@ -35,9 +35,9 @@ export async function POST(req: NextRequest) {
                     body.data.attributes.first_order_item.variant_name;
 
                 let credits = 0;
-                if (plan === "Silver") credits = 30;
-                if (plan === "Gold") credits = 180;
-                if (plan === "Platinum") credits = 280;
+                if (plan === "Silver") credits = 1500;
+                if (plan === "Gold") credits = 3500;
+                if (plan === "Platinum") credits = 7000;
 
                 if (credits > 0) {
                     await db

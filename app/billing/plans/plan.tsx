@@ -62,8 +62,8 @@ export function Plan({ serverPlan }: { serverPlan: NewPlan }) {
             >
                 {/* Badge */}
                 {localPlan.badge && (
-                    <div className="max-w-fit min-w-min inline-flex items-center whitespace-nowrap px-2 h-7 rounded-full bg-gradient-to-r from-primary to-violet-500 absolute -top-3 left-1/2 -translate-x-1/2 select-none">
-                        <span className="text-xs font-medium bg-gradient-to-r from-white to-foreground/80 bg-clip-text text-transparent bg-[length:250%_100%] animate-background-shine">
+                    <div className="max-w-fit min-w-min inline-flex items-center whitespace-nowrap px-2 h-7 rounded-full bg-gradient-to-r from-primary to-[#40978d] absolute -top-3 left-1/2 -translate-x-1/2 select-none">
+                        <span className="text-xs font-medium bg-gradient-to-r from-white to-foreground/80 bg-clip-text  animate-background-shine text-neutral-900">
                             {localPlan.badge}
                         </span>
                     </div>
@@ -98,12 +98,9 @@ export function Plan({ serverPlan }: { serverPlan: NewPlan }) {
                     </span>
                     <span className="text-xs text-muted-foreground">
                         <br />
-                        Valid for Lifetime
+                        One time 
                     </span>
-                    <span className="text-xs text-muted-foreground">
-                        <br />
-                        2 credits = 1 image
-                    </span>
+                   
                 </div>
 
                 {/* Separator */}

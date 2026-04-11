@@ -4,11 +4,11 @@ import { headers } from "next/headers";
 import { db } from "@/db";
 import { images } from "@/db/schema/image-schema";
 import { user as userTable } from "@/db/schema/auth-schema"; 
-import { eq, sql } from "drizzle-orm"; 
+import { and, eq, gte, sql } from "drizzle-orm"; 
 import { imagekit } from "@/lib/config";
 
 
-const CREDITS_PER_OPERATION = 1; 
+const CREDITS_PER_OPERATION = 0; 
 
 
 
@@ -147,12 +147,22 @@ export async function POST(req: Request) {
             .returning();
 
         // ✅ Deduct credits only after successful processing + upload
-        await db
+        const result = await db
             .update(userTable)
             .set({
                 credits: sql`${userTable.credits} - ${CREDITS_PER_OPERATION}`,
             })
-            .where(eq(userTable.id, session.user.id));
+            .where(
+                and(
+                    eq(userTable.id, session.user.id),
+                    gte(userTable.credits, CREDITS_PER_OPERATION) // ✅ only deducts if enough credits
+                )
+            )
+            .returning({ credits: userTable.credits });
+
+        if (result.length === 0) {
+            return new Response("Insufficient credits", { status: 402 });
+        }
 
         return NextResponse.json({
             success: true,

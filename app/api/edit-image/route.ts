@@ -6,7 +6,7 @@ import { db } from "@/db";
 import { images } from "@/db/schema/image-schema";
 import { imagekit } from "@/lib/config";
 import { user as userTable } from "@/db/schema/auth-schema"; 
-import { eq, sql } from "drizzle-orm";
+import { and, eq, gte, sql } from "drizzle-orm";
 
 const CREDITS_PER_GENERATION = 0;
 
@@ -170,12 +170,22 @@ export async function POST(request: Request) {
             .returning();
 
           // ✅ Deduct credits only after successful generation + upload
-          await db
+          const result = await db
             .update(userTable)
             .set({
               credits: sql`${userTable.credits} - ${CREDITS_PER_GENERATION}`,
             })
-            .where(eq(userTable.id, session.user.id));
+            .where(
+              and(
+                eq(userTable.id, session.user.id),
+                gte(userTable.credits, CREDITS_PER_GENERATION) // ✅ only deducts if enough credits
+              )
+            )
+            .returning({ credits: userTable.credits });
+
+          if (result.length === 0) {
+            return new Response("Insufficient credits", { status: 402 });
+          }
 
           return NextResponse.json({
             success: true,

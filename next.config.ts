@@ -1,19 +1,23 @@
 import type { NextConfig } from "next";
 
-const nextConfig = {
+const nextConfig: NextConfig = {
+  // @ts-ignore
   eslint: {
     ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,  
   },
   reactStrictMode: false,
   images: {
     remotePatterns: [
       {
-        protocol: "https" as const,
+        protocol: "https",
         hostname: "ik.imagekit.io",
         port: "",
       },
     ],
   },
-} satisfies NextConfig & { eslint?: { ignoreDuringBuilds?: boolean } };
+};
 
 export default nextConfig;

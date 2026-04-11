@@ -17,6 +17,16 @@ export const auth = betterAuth({
         schema: schema,
     }),
 
+    user: {
+        additionalFields: {
+            credits: {
+                type: "number",
+                defaultValue: 0,
+                input: false,
+            },
+        },
+    },
+
     socialProviders: {
         google: {
             accessType: "offline",

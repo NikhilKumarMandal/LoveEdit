@@ -120,11 +120,11 @@ const Navbar = () => {
                                 >
                                     {/* Email + Credits header */}
                                     <DropdownMenuLabel className="px-3 py-2">
-                                        <p className="text-xs text-white/50 truncate">{session.user.email}</p>
+                                        <p className="text-xs text-white/50 truncate">{session?.user?.email}</p>
                                         <div className="flex items-center gap-1.5 mt-1">
                                             <CreditCard className="h-3.5 w-3.5 text-violet-400" />
                                             <span className="text-xs font-semibold text-white">
-                                                {(session.user as any).credits ?? 0} credits
+                                                {session?.user?.credits} credits
                                             </span>
                                         </div>
                                     </DropdownMenuLabel>

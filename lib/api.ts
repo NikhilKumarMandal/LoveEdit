@@ -1,3 +1,6 @@
+import { toast } from "sonner";
+import { handleInsufficientCredits } from "./utils";
+
 export async function callWaveSpeed(endpoint: string, body: any) {
     const res = await fetch(
         `https://api.wavespeed.ai/api/v3/wavespeed-ai/${endpoint}`,
@@ -32,10 +35,19 @@ export async function processImageTool(
 
     const data = await res.json();
 
+    if (res.status === 402) {
+        handleInsufficientCredits();
+        return;
+    };
+
     if (!res.ok) {
-        console.error("API Error:", data);
-        throw new Error(data?.error || "Processing failed");
+        toast.error("Something went wrong", {
+            description: "Failed to remove bg or upscale. Please try again.",
+        });
     }
+
+
+
 
     return data;
 }

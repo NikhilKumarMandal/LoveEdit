@@ -1,6 +1,8 @@
 import { processImageTool } from "@/lib/api";
 import { ToolType } from "@/lib/constants";
+import { handleInsufficientCredits } from "@/lib/utils";
 import { FileUIPart } from "ai";
+import { toast } from "sonner";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
@@ -144,39 +146,58 @@ export const useEditorStore = create<EditorState>()(
     4. TEXTURE MATCHING: Replicate the exact film grain, noise level, and sharpness of the original photo to prevent a "pasted-on" look. The transition at the mask boundary must be invisible.
     5. STRICT ISOLATION: Do not modify any pixels outside the designated white masked area under any circumstances`;
 
-      const response = await fetch("/api/edit-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...buildImagePayload(state.image),   // imageUrl OR imageBase64
-          prompt: finalPrompt,
-          userFiles: state.userFiles,
-          maskBase64: state.mask,
-        }),
-      });
+     try {
+       const response = await fetch("/api/edit-image", {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify({
+           ...buildImagePayload(state.image), 
+           prompt: finalPrompt,
+           userFiles: state.userFiles,
+           maskBase64: state.mask,
+         }),
+       });
 
-      if (!response.ok) {
-        set({ isLoading: false });
-        throw new Error("failed to generate.");
-      }
 
-      const data = await response.json();
-      const newImage = data.image?.url;
-
-      if (!newImage) {
-        set({ isLoading: false });
-        throw new Error("Invalid response from API");
-      }
-
-      const clonedHistory = [...state.history, newImage];
-
-      set(() => ({
-        image: newImage,
-        imageId: data.image?.id ?? null,
-        history: clonedHistory,
-        historyIndex: state.history.length,
-        isLoading: false,
-      }));
+       if (response.status === 402) {
+         handleInsufficientCredits();
+         return;
+       };
+ 
+       if (!response.ok) {
+         set({ isLoading: false });
+         toast.error("Something went wrong", {
+           description: "Failed to generate edit. Please try again.",
+         });
+         return;
+       };
+ 
+       const data = await response.json();
+       const newImage = data.image?.url;
+ 
+       if (!newImage) {
+         set({ isLoading: false });
+         throw new Error("Invalid response from API");
+       }
+ 
+       const clonedHistory = [...state.history, newImage];
+ 
+       set(() => ({
+         image: newImage,
+         imageId: data.image?.id ?? null,
+         history: clonedHistory,
+         historyIndex: state.history.length,
+         isLoading: false,
+       }));
+     } catch (err:any) {
+       if (err?.status === 402) {
+         handleInsufficientCredits();
+       } else {
+         toast.error("Failed to remove background. Please try again.");
+       };
+     } finally {
+       set({ isLoading: false }); 
+     }
     },
 
     applyFilter: async (prompt: string) => {
@@ -192,37 +213,55 @@ export const useEditorStore = create<EditorState>()(
 
       set({ isLoading: true });
 
-      const response = await fetch("/api/edit-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...buildImagePayload(state.image),   // imageUrl OR imageBase64
-          prompt: finalPrompt,
-        }),
-      });
+      try {
+        const response = await fetch("/api/edit-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...buildImagePayload(state.image),   // imageUrl OR imageBase64
+            prompt: finalPrompt,
+          }),
+        });
 
-      if (!response.ok) {
+        if (response.status === 402) {
+          handleInsufficientCredits();
+          return;
+        }
+
+  
+        if (!response.ok) {
+          toast.error("Something went wrong", {
+            description: "Failed to apply filter. Please try again.",
+          });
+          set({ isLoading: false });
+        }
+  
+        const data = await response.json();
+        const newImage = data.image?.url;
+  
+        if (!newImage) {
+          set({ isLoading: false });
+          throw new Error("Invalid response from API");
+        }
+  
+        const clonedHistory = [...state.history, newImage];
+  
+        set(() => ({
+          image: newImage,
+          imageId: data.image?.id ?? null,
+          history: clonedHistory,
+          historyIndex: state.history.length,
+          isLoading: false,
+        }));
+      } catch (err: any) {
+        if (err?.status === 402) {
+          handleInsufficientCredits();
+        } else {
+          toast.error("Failed to apply filter. Please try again.");
+        }
+      } finally {
         set({ isLoading: false });
-        throw new Error("failed to generate.");
       }
-
-      const data = await response.json();
-      const newImage = data.image?.url;
-
-      if (!newImage) {
-        set({ isLoading: false });
-        throw new Error("Invalid response from API");
-      }
-
-      const clonedHistory = [...state.history, newImage];
-
-      set(() => ({
-        image: newImage,
-        imageId: data.image?.id ?? null,
-        history: clonedHistory,
-        historyIndex: state.history.length,
-        isLoading: false,
-      }));
     },
 
     applyExpansion: async (aspectRatio: string) => {
@@ -239,39 +278,58 @@ export const useEditorStore = create<EditorState>()(
 
       set({ isLoading: true });
 
-      const response = await fetch("/api/edit-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...buildImagePayload(state.image),   // imageUrl OR imageBase64
-          prompt: finalPrompt,
-          aspectRatio,
-        }),
-      });
+     try {
+       const response = await fetch("/api/edit-image", {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify({
+           ...buildImagePayload(state.image),   // imageUrl OR imageBase64
+           prompt: finalPrompt,
+           aspectRatio,
+         }),
+       });
+ 
+       if (response.status === 402) {
+         handleInsufficientCredits();
+         return;
+       }
 
-      if (!response.ok) {
-        set({ isLoading: false });
-        throw new Error("failed to generate.");
-      }
 
-      const data = await response.json();
-      const newImage = data.image?.url;
-
-      if (!newImage) {
-        set({ isLoading: false });
-        throw new Error("Invalid response from API");
-      }
-
-      const clonedHistory = [...state.history, newImage];
-
-      set(() => ({
-        image: newImage,
-        imageId: data.image?.id ?? null,
-        history: clonedHistory,
-        historyIndex: state.history.length,
-        isLoading: false,
-      }));
+       if (!response.ok) {
+         toast.error("Something went wrong", {
+           description: "Failed to apply expansion. Please try again.",
+         });
+         set({ isLoading: false });
+       }
+ 
+       const data = await response.json();
+       const newImage = data.image?.url;
+ 
+       if (!newImage) {
+         set({ isLoading: false });
+         throw new Error("Invalid response from API");
+       }
+ 
+       const clonedHistory = [...state.history, newImage];
+ 
+       set(() => ({
+         image: newImage,
+         imageId: data.image?.id ?? null,
+         history: clonedHistory,
+         historyIndex: state.history.length,
+         isLoading: false,
+       }));
+     } catch (err:any) {
+       if (err?.status === 402) {
+         handleInsufficientCredits();
+       } else {
+         toast.error("Failed to apply expansion. Please try again.");
+       }
+     } finally {
+       set({ isLoading: false });
+     }
     },
+
     removeBackground: async () => {
       const state = get();
       if (!state.image) return;
@@ -293,11 +351,17 @@ export const useEditorStore = create<EditorState>()(
           historyIndex: updatedHistory.length - 1,
           isLoading: false,
         });
-      } catch (err) {
-        console.error(err);
+      } catch (err:any) {
+        if (err?.status === 402) {
+          handleInsufficientCredits();
+        } else {
+          toast.error("Failed to remove background. Please try again.");
+        }
+      } finally {
         set({ isLoading: false });
       }
     },
+
     upscaleImage: async (resolution = "4k") => {
       const state = get();
       if (!state.image) return;
@@ -321,8 +385,13 @@ export const useEditorStore = create<EditorState>()(
           historyIndex: updatedHistory.length - 1,
           isLoading: false,
         });
-      } catch (err) {
-        console.error(err);
+      } catch (err: any) {
+        if (err?.status === 402) {
+          handleInsufficientCredits();
+        } else {
+          toast.error("Failed to upscale image. Please try again.");
+        }
+      } finally {
         set({ isLoading: false });
       }
     },

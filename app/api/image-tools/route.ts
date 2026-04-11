@@ -3,22 +3,15 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/db";
 import { images } from "@/db/schema/image-schema";
-import ImageKit from "imagekit";
+import { user as userTable } from "@/db/schema/auth-schema"; 
+import { eq, sql } from "drizzle-orm"; 
+import { imagekit } from "@/lib/config";
 
-// ✅ ImageKit init
-if (
-    !process.env.IMAGEKIT_PUBLIC_KEY ||
-    !process.env.IMAGEKIT_PRIVATE_KEY ||
-    !process.env.IMAGEKIT_URL_ENDPOINT
-) {
-    throw new Error("ImageKit env variables are missing");
-}
 
-const imagekit = new ImageKit({
-    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-    privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
-    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
-});
+const CREDITS_PER_OPERATION = 1; 
+
+
+
 
 // ✅ WaveSpeed helper
 async function callWaveSpeed(endpoint: string, body: any) {
@@ -54,6 +47,29 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        // ✅ Check credits before doing anything
+        const [currentUser] = await db
+            .select({ credits: userTable.credits })
+            .from(userTable)
+            .where(eq(userTable.id, session.user.id));
+
+        if (!currentUser) {
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
+
+        if (
+            currentUser.credits === null ||
+            currentUser.credits < CREDITS_PER_OPERATION
+        ) {
+            return NextResponse.json(
+                {
+                    error: "Insufficient credits",
+                    credits: currentUser.credits ?? 0,
+                },
+                { status: 402 }
+            );
+        }
+
         const { type, imageUrl, targetResolution } = await req.json();
 
         if (!type || !imageUrl) {
@@ -87,7 +103,7 @@ export async function POST(req: Request) {
             );
         }
 
-        // ✅ FIX: correct response parsing
+        // ✅ Parse WaveSpeed response
         const imageUrlFromAPI = data?.data?.outputs?.[0];
 
         if (!imageUrlFromAPI) {
@@ -130,9 +146,18 @@ export async function POST(req: Request) {
             })
             .returning();
 
+        // ✅ Deduct credits only after successful processing + upload
+        await db
+            .update(userTable)
+            .set({
+                credits: sql`${userTable.credits} - ${CREDITS_PER_OPERATION}`,
+            })
+            .where(eq(userTable.id, session.user.id));
+
         return NextResponse.json({
             success: true,
             image: record,
+            credits: currentUser.credits - CREDITS_PER_OPERATION, // remaining credits
         });
     } catch (err) {
         console.error("Image tools error:", err);

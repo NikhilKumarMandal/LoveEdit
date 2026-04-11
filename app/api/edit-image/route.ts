@@ -4,22 +4,11 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { images } from "@/db/schema/image-schema";
+import { imagekit } from "@/lib/config";
+import { user as userTable } from "@/db/schema/auth-schema"; 
+import { eq, sql } from "drizzle-orm";
 
-import ImageKit from "imagekit";
-
-if (
-  !process.env.IMAGEKIT_PUBLIC_KEY ||
-  !process.env.IMAGEKIT_PRIVATE_KEY ||
-  !process.env.IMAGEKIT_URL_ENDPOINT
-) {
-  throw new Error("ImageKit env variables are missing");
-}
-
-export const imagekit = new ImageKit({
-  publicKey: process.env.IMAGEKIT_PUBLIC_KEY!,
-  privateKey: process.env.IMAGEKIT_PRIVATE_KEY!,
-  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT!,
-});
+const CREDITS_PER_GENERATION = 0;
 
 function getMimeType(dataUrl: string): string {
   const match = dataUrl.match(/^data:(image\/[a-zA-Z+]+);base64,/);
@@ -52,6 +41,29 @@ export async function POST(request: Request) {
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // ✅ Fetch user and check credits
+    const [currentUser] = await db
+      .select({ credits: userTable.credits })
+      .from(userTable)
+      .where(eq(userTable.id, session.user.id));
+
+    if (!currentUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    if (
+      currentUser.credits === null ||
+      currentUser.credits < CREDITS_PER_GENERATION
+    ) {
+      return NextResponse.json(
+        {
+          error: "Insufficient credits",
+          credits: currentUser.credits ?? 0,
+        },
+        { status: 402 }
+      );
     }
 
     const {
@@ -124,7 +136,6 @@ export async function POST(request: Request) {
     if (content?.parts) {
       for (const part of content.parts) {
         if (part.inlineData) {
-
           if (!part.inlineData?.data) {
             return NextResponse.json(
               { error: "Invalid image data from AI" },
@@ -158,7 +169,14 @@ export async function POST(request: Request) {
             })
             .returning();
 
-          // ✅ Return ImageKit URL instead of base64
+          // ✅ Deduct credits only after successful generation + upload
+          await db
+            .update(userTable)
+            .set({
+              credits: sql`${userTable.credits} - ${CREDITS_PER_GENERATION}`,
+            })
+            .where(eq(userTable.id, session.user.id));
+
           return NextResponse.json({
             success: true,
             image: {
@@ -168,6 +186,7 @@ export async function POST(request: Request) {
               width: uploadResponse.width,
               height: uploadResponse.height,
             },
+            credits: currentUser.credits - CREDITS_PER_GENERATION, // remaining credits
           });
         }
       }

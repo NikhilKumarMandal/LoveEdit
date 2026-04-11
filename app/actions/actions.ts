@@ -215,7 +215,7 @@ export async function getCheckoutURL(
             },
             productOptions: {
                 enabledVariants: [variantId],
-                redirectUrl: `https://www.pixxelai.live/generator`,
+                redirectUrl: `https://www.loveedit.art/gallery`,
                 receiptButtonText: 'Go to Dashboard',
                 receiptThankYouNote:
                     'Thank you for signing up to Lemon Stand!',

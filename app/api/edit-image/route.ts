@@ -8,7 +8,7 @@ import { imagekit } from "@/lib/config";
 import { user as userTable } from "@/db/schema/auth-schema"; 
 import { and, eq, gte, sql } from "drizzle-orm";
 
-const CREDITS_PER_GENERATION = 0;
+const CREDITS_PER_GENERATION = 1;
 
 function getMimeType(dataUrl: string): string {
   const match = dataUrl.match(/^data:(image\/[a-zA-Z+]+);base64,/);

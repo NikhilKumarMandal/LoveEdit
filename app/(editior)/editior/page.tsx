@@ -12,7 +12,9 @@ import { useEditorStore } from "@/store/useEditorState";
 import ImageEditor from "@/components/image-editor";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
- 
+import { handleInsufficientCredits } from "@/lib/utils";
+import { toast } from "sonner";
+
 export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -37,10 +39,16 @@ export default function Home() {
         body: formData,
       });
 
+      if (res.status === 402) {
+        handleInsufficientCredits();
+        return;
+      };
+
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.error || "Upload failed");
-      }
+        toast.error("Upload failed");
+      };
+
 
       const data = await res.json();
       // data = { id, url, fileId, width, height }

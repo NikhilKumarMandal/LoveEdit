@@ -3,21 +3,9 @@ import { db } from "@/db";
 import { images } from "@/db/schema/image-schema";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import ImageKit from "imagekit";
-
-if (
-    !process.env.IMAGEKIT_PUBLIC_KEY ||
-    !process.env.IMAGEKIT_PRIVATE_KEY ||
-    !process.env.IMAGEKIT_URL_ENDPOINT
-) {
-    throw new Error("ImageKit env variables are missing");
-}
-
-export const imagekit = new ImageKit({
-    publicKey: process.env.IMAGEKIT_PUBLIC_KEY!,
-    privateKey: process.env.IMAGEKIT_PRIVATE_KEY!,
-    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT!,
-});
+import { imagekit } from "@/lib/config";
+import { user as userTable } from "@/db/schema/auth-schema";
+import { eq } from "drizzle-orm";
 
 
 export async function POST(req: NextRequest) {
@@ -28,6 +16,30 @@ export async function POST(req: NextRequest) {
 
         if (!session?.user?.id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        };
+
+
+        // ✅ Check credits before doing anything
+        const [currentUser] = await db
+            .select({ credits: userTable.credits })
+            .from(userTable)
+            .where(eq(userTable.id, session.user.id));
+
+        if (!currentUser) {
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
+
+        if (
+            currentUser.credits === null ||
+            currentUser.credits < 10
+        ) {
+            return NextResponse.json(
+                {
+                    error: "Insufficient credits",
+                    credits: currentUser.credits ?? 0,
+                },
+                { status: 402 }
+            );
         }
 
         const formData = await req.formData();

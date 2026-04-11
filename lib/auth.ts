@@ -7,7 +7,11 @@ import { schema } from "@/db/schema/auth-schema";
 export const auth = betterAuth({
     baseURL: process.env.BETTER_AUTH_URL,
     basePath: "/api/auth",
-    trustedOrigins: [process.env.BETTER_AUTH_URL!],
+    trustedOrigins: [
+    "https://www.loveedit.art",
+    "https://loveedit.art",
+    "http://localhost:3000",
+  ],
     database: drizzleAdapter(db, {
         provider: "pg",
         schema: schema,

@@ -8,7 +8,7 @@ import { and, eq, gte, sql } from "drizzle-orm";
 import { imagekit } from "@/lib/config";
 
 
-const CREDITS_PER_OPERATION = 1; 
+const CREDITS_PER_OPERATION = 10; 
 
 
 

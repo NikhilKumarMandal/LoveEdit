@@ -35,6 +35,7 @@ type EditorState = {
   setSelectedTool: (tool: ToolType) => void;
   removeBackground: () => Promise<void>;
   upscaleImage: (resolution?: string) => Promise<void>;
+  clearCanvas: () => void;
 };
 
 // Helper: decide what to send to the API.
@@ -73,6 +74,15 @@ export const useEditorStore = create<EditorState>()(
     setUserFiles: (files: FileUIPart[]) => {
       set({ userFiles: files });
     },
+    clearCanvas: () =>
+      set({
+        image: null,
+        imageId: null,
+        mask: null,
+        history: [],
+        historyIndex: 0,
+        prompt: "",
+      }),
 
     // Called after ImageKit upload succeeds — receives the URL from DB
     setImage: (imageUrl: string, imageId?: string) =>

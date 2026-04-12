@@ -7,6 +7,7 @@ import {
   Download,
   History,
   Redo,
+  Trash2,
   Undo,
   Upload,
   X,
@@ -18,6 +19,7 @@ import { useEditorStore } from "@/store/useEditorState";
 export function Navbar() {
   const {
     image,
+    clearCanvas,  
     undo,
     redo,
     historyIndex,
@@ -87,11 +89,13 @@ export function Navbar() {
         {/* 2. File Operations Group */}
         <div className="flex items-center gap-2">
           <Button
+            onClick={clearCanvas}
+            disabled={!image}
             variant="outline"
             size="sm"
-            className="h-9 bg-zinc-900 border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-zinc-700 px-2.5 md:px-4">
-            <Upload size={14} className="md:mr-2" />
-            <span className="hidden md:inline">Upload</span>
+            className="h-9 bg-zinc-900 border-zinc-800 text-zinc-300 hover:bg-red-950/60 hover:border-red-800 hover:text-red-400 disabled:opacity-40 px-2.5 md:px-4">
+            <Trash2 size={14} className="md:mr-2" />
+            <span className="hidden md:inline">Clear</span>
           </Button>
 
           <Button

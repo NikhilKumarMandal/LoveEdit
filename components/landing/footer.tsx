@@ -2,7 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Container from "../global/container";
 import Wrapper from "../global/wrapper";
-import { PRODUCT_LINKS, RESOURCES_LINKS } from "@/constants/links";
+import { PRODUCT_LINKS } from "@/constants/links";
+import { Twitter, Linkedin } from "lucide-react";
 
 const Footer = () => {
     return (
@@ -31,14 +32,34 @@ const Footer = () => {
                                 Effortlessly launch robust, <br />production-ready projects
                             </p>
                             <div className="mt-4 text-sm text-muted-foreground px-4 py-2 cursor-pointer rounded-full border border-border/40 bg-foreground/5 hover:bg-foreground/10 transition-colors duration-300">
-                                <Link href="tel:+11234567890">
+                                <Link href="mailto:help@loveedit.art">
                                     <p>help@loveedit.art</p>
+                                </Link>
+                            </div>
+
+                            {/* Social Links */}
+                            <div className="flex items-center gap-3 mt-5">
+                                <Link
+                                    href="https://x.com/Nikhilkdev007"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center justify-center w-9 h-9 rounded-full border border-border/40 bg-foreground/5 hover:bg-foreground/10 text-muted-foreground hover:text-foreground transition-colors duration-300"
+                                >
+                                    <Twitter className="w-4 h-4" />
+                                </Link>
+                                <Link
+                                    href="https://www.linkedin.com/in/nikhil-kumar-364189341/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center justify-center w-9 h-9 rounded-full border border-border/40 bg-foreground/5 hover:bg-foreground/10 text-muted-foreground hover:text-foreground transition-colors duration-300"
+                                >
+                                    <Linkedin className="w-4 h-4" />
                                 </Link>
                             </div>
                         </div>
                     </Container>
 
-                    <div className="grid grid-cols-2 md:place-items-end w-full">
+                    <div className="grid grid-cols-1 md:place-items-end w-full">
                         <Container animation="fadeUp" delay={0.5}>
                             <div>
                                 <h3 className="text-base font-medium">
@@ -50,32 +71,6 @@ const Footer = () => {
                                             key={index}
                                             animation="fadeLeft"
                                             delay={0.6 + (index * 0.1)}
-                                        >
-                                            <li>
-                                                <Link
-                                                    href={link.href}
-                                                    className="hover:text-foreground transition-colors"
-                                                >
-                                                    {link.label}
-                                                </Link>
-                                            </li>
-                                        </Container>
-                                    ))}
-                                </ul>
-                            </div>
-                        </Container>
-
-                        <Container animation="fadeUp" delay={0.5}>
-                            <div>
-                                <h3 className="text-base font-medium">
-                                    Resources
-                                </h3>
-                                <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-                                    {RESOURCES_LINKS.map((link, index) => (
-                                        <Container
-                                            key={index}
-                                            animation="fadeLeft"
-                                            delay={0.7 + (index * 0.1)}
                                         >
                                             <li>
                                                 <Link

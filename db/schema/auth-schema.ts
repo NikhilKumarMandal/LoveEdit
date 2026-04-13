@@ -16,7 +16,7 @@ export const user = pgTable("user", {
         .default(false)
         .notNull(),
     image: text("image"),
-    credits: integer().default(0),
+    credits: integer().default(20),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
         .defaultNow()

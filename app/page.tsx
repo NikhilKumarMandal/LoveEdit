@@ -20,7 +20,7 @@ export default function Home() {
         </div>
       </section>
       <Faq />
-      <Stats />
+      {/* <Stats /> */}
       {/* <Testimonials /> */}
       <CTA />
       <Footer/>

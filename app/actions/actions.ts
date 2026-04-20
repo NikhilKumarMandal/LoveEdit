@@ -32,15 +32,6 @@ export async function syncPlans() {
     const allVariants = productsRes.data?.included as Variant['data'][] | undefined
     if (!allVariants) return []
 
-    console.log(
-        "✨ All Variants:",
-        allVariants.map((v) => ({
-            id: v.id,
-            name: v.attributes.name,
-            status: v.attributes.status,
-            is_subscription: v.attributes.is_subscription,
-        }))
-    )
 
     for (const v of allVariants) {
         const variantData = v.attributes
@@ -164,7 +155,6 @@ export async function syncPlans() {
         .from(variant)
         .leftJoin(product, eq(variant.productId, product.id))
 
-    console.log(variantsWithProduct)
 
     return variantsWithProduct
 }
@@ -223,7 +213,6 @@ export async function getCheckoutURL(
         }
     )
 
-    console.log(checkout)
 
     return checkout.data?.data?.attributes?.url
 }

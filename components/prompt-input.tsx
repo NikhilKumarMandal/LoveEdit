@@ -82,9 +82,6 @@ export const AIPromptInput = () => {
     setUserFiles(message.files);
     generateEdit();
 
-    // eslint-disable-next-line no-console
-    console.log("Submitting message:", message);
-
     setTimeout(() => {
       setStatus("streaming");
     }, SUBMITTING_TIMEOUT);

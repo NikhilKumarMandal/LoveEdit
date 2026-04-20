@@ -38,7 +38,6 @@ export async function Plans() {
         .from(variant)
         .leftJoin(product, eq(variant.productId, product.id));
 
-    console.log("all plans", allPlans);
 
     // =========================
     // SYNC IF EMPTY

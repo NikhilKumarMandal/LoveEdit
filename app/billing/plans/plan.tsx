@@ -26,8 +26,7 @@ export type NewPlan = {
 
 export function Plan({ serverPlan }: { serverPlan: NewPlan }) {
     const { name, variantId } = serverPlan;
-    console.log("variantId", variantId);
-
+    
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
